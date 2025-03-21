@@ -2,12 +2,12 @@ const getState = ({ getStore, getActions, setStore }) => {
     return {
         store: {
             contacts: [],
-            slug:"",
-         
+            slug: "",
+
         },
         actions: {
             // primera tarea Función para agregar un nuevo contacto
-            addData: async (nuevoContacto,slug) => {
+            addData: async (nuevoContacto, slug) => {
                 try {
                     const response = await fetch(`https://playground.4geeks.com/contact/agendas/${slug}/contacts`, {
                         method: "POST",
@@ -27,18 +27,18 @@ const getState = ({ getStore, getActions, setStore }) => {
 
             // segunda tarea Función para obtener los contactos desde la API
             getList: async (slug) => {
-          
-                
+
+
                 try {                           //https://playground.4geeks.com/contact/agendas/Lvera
-                    const response = await fetch(`https://playground.4geeks.com/contact/agendas/${slug}/contacts`);                    
-                    if (response.status === 404){
+                    const response = await fetch(`https://playground.4geeks.com/contact/agendas/${slug}/contacts`);
+                    if (response.status === 404) {
                         getActions().createAgenda(slug);
                         return;
                     }
                     if (response.ok) {
                         const data = await response.json();
                         console.log("Datos recibidos de la API:", data); // Verificar datos obtenidos
-                        setStore({...getStore(), contacts: data.contacts, slug:slug }); // Guarda los contactos en el store
+                        setStore({ ...getStore(), contacts: data.contacts, slug: slug }); // Guarda los contactos en el store
                     } else {
                         console.error("Error al obtener los contactos:", response.status);
                     }
@@ -46,7 +46,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.log("Error en la solicitud:", error);
                 }
             },
-            
+
             // tercer tarea funcion para crear usuarios / una nueva agenda 
             createAgenda: async (slug) => {
 
@@ -54,21 +54,21 @@ const getState = ({ getStore, getActions, setStore }) => {
                     const response = await fetch(`https://playground.4geeks.com/contact/agendas/${slug}`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
- 
-                    });                    
-                        
-                        if (response.status === 201) {
-                            setStore({slug:slug});
-                            return;
-                        }
-                       
+
+                    });
+
+                    if (response.status === 201) {
+                        setStore({ slug: slug });
+                        return;
+                    }
+
                 } catch (error) {
                     console.log("Error en la solicitud:", error);
                 }
             },
             // cuarta tarea funcion para eliminar contatos
             deleteContact: async (id, slug) => {
-                                                //https://playground.4geeks.com/contact/agendas/Lvera/contacts/1
+                //https://playground.4geeks.com/contact/agendas/Lvera/contacts/1
                 try {
                     const response = await fetch(`https://playground.4geeks.com/contact/agendas/${slug}/contacts/${id}`, {
                         method: "DELETE"
@@ -83,7 +83,26 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.log("Error en la solicitud:", error);
                 }
             },
-            // quinta tarea funcion para editar contactos
+            // quinta tarea funcion para editar contactos.
+            editData: async (editarDato, slug,id) => {
+                                                //https://playground.4geeks.com/contact/agendas/Lvera/contacts/01
+
+                try {
+                    const response = await fetch(`https://playground.4geeks.com/contact/agendas/${slug}/contacts/${id}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(editarDato)
+                    });
+                    if (response.ok) {
+                        console.log("Contacto agregado exitosamente.");
+                        getActions().getList(slug); // Actualiza la lista de contactos
+                    } else {
+                        console.error("Error al agregar el contacto:", response.status);
+                    }
+                } catch (error) {
+                    console.log("Error en la solicitud:", error);
+                }
+            },
         }
     };
 };

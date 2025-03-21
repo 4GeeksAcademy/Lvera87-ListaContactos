@@ -3,18 +3,32 @@ import { Context } from '../store/appContext';
 import { Link } from 'react-router-dom';
 
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import EditContact from './EditContact.jsx';
+import ModalDelete from './ModalDelete.jsx';
 
 const Contact = () => {
     const { store, actions } = useContext(Context);
     const [slug, setSlug] = useState("");
+    const [showModalEdit, setShowModalEdit]= useState({
+        showModal:false,
+        id:undefined,
+        contact:{}
+    })
+   
+    const [showModalDelete, setShowModalDelete]= useState({
+        showModal:false,
+        id:undefined,
+        name:""
+    })
 
-    // useEffect(() => {
-    //     actions.getList(slug);
-    // }, [slug]);
+    useEffect(() => {
+        actions.getList("Lvera");
+        setSlug("Lvera")
+    }, []);
 
     return (
         <div>
-            
+
             <nav style={{ display: "flex", justifyContent: "flex-end" }}>
                 <Link to="/addcontact">
                     <button type="button" className="btn btn-success m-2">
@@ -39,32 +53,34 @@ const Contact = () => {
                                 </div>
                                 <div className="col-3 d-flex align-items-center justify-content-center">
 
-                                    <Link to="/EditContact">
-                                        <button type="button" className="m-4" style={{ background: "none", border: "none", padding: 1, cursor: "pointer", fontSize: "24px" }}>
-                                            <i className="fas fa-edit" style={{ color: 'black' }}></i>
-                                        </button>
-                                    </Link>
-                                    
-                                    <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" style={{ background: "none", border: "none", padding: 1, cursor: "pointer", fontSize: "24px" }}>
+
+                                    <button 
+                                     data-bs-toggle="modal"
+                                     data-bs-target="#ModalEdit"
+                                     type="button" 
+                                     className="m-4"
+                                     onClick={()=>setShowModalEdit({
+                                        showModal:true,
+                                        id:contact.id,
+                                        contact:contact
+                                     })} 
+
+                                     style={{ background: "none", border: "none", padding: 1, cursor: "pointer", fontSize: "24px" }}>
+                                        <i className="fas fa-edit" style={{ color: 'black' }}></i>
+                                    </button>
+
+                                    <button 
+                                    type="button" data-bs-toggle="modal" 
+                                    data-bs-target="#exampleModal" 
+                                    onClick={()=>setShowModalDelete({
+                                        showModal:true,
+                                        id:contact.id,
+                                        name:contact.name
+                                     })} 
+                                    style={{ background: "none", border: "none", padding: 1, cursor: "pointer", fontSize: "24px" }}>
                                         <i className="fas fa-trash-alt" style={{ color: 'black' }}></i>
                                     </button>
-                                    <div className="modal fade" id="exampleModal" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div className="modal-dialog">
-                                            <div className="modal-content">
-                                                <div className="modal-header">
-                                                    <h1 className="modal-title fs-5" id="exampleModalLabel">Borrar Contacto</h1>
-                                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
-                                                </div>
-                                                <div className="modal-body">
-                                                    desea borrar el contacto: <strong>{contact.name}</strong>?
-                                                </div>
-                                                <div className="modal-footer">
-                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                    <button type="button" className="btn btn-danger" data-bs-dismiss="modal" onClick={()=>actions.deleteContact(contact.id,slug)}>Borrar</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+ 
                                 </div>
                             </div>
                         </div>
@@ -79,6 +95,18 @@ const Contact = () => {
                     Search or Create
                 </button>
             </div>
+            <EditContact
+            id={showModalEdit.id}
+            showModal={showModalEdit.showModal}
+            contact={showModalEdit.contact}
+            onClose={()=>setShowModalEdit({showModal:false})}
+            />
+            <ModalDelete
+            id={showModalDelete.id}
+            showModal={showModalDelete.showModal}
+            name={showModalDelete.name}
+            onClose={()=>setShowModalDelete({showModal:false})}
+            />
         </div>
     );
 };
